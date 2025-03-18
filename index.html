@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotion Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        textarea, input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Emotion Detection</h1>
+
+        <!-- Text Analysis Form -->
+        <form id="textForm">
+            <h2>Text Emotion Analysis</h2>
+            <textarea id="textInput" placeholder="Enter text here..." rows="4"></textarea>
+            <button type="submit">Analyze Text</button>
+        </form>
+
+        <!-- Face Analysis Form -->
+        <form id="faceForm">
+            <h2>Face Emotion Analysis</h2>
+            <input type="file" id="faceInput" accept="image/*">
+            <button type="submit">Analyze Face</button>
+        </form>
+
+        <!-- Speech Analysis Form -->
+        <form id="speechForm">
+            <h2>Speech Emotion Analysis</h2>
+            <input type="file" id="speechInput" accept="audio/*">
+            <button type="submit">Analyze Speech</button>
+        </form>
+
+        <!-- Result Display -->
+        <div id="result" class="result">
+            <h3>Result</h3>
+            <p id="resultText">No result yet.</p>
+        </div>
+    </div>
+
+    <script>
+        const apiUrl = "http://127.0.0.1:5000";
+
+        // Handle Text Analysis Form Submission
+        document.getElementById("textForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const text = document.getElementById("textInput").value;
+
+            const response = await fetch(`${apiUrl}/analyze_text`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ text }),
+            });
+
+            const result = await response.json();
+            document.getElementById("resultText").innerText = JSON.stringify(result, null, 2);
+        });
+
+        // Handle Face Analysis Form Submission
+        document.getElementById("faceForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const file = document.getElementById("faceInput").files[0];
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            const response = await fetch(`${apiUrl}/analyze_face`, {
+                method: "POST",
+                body: formData,
+            });
+
+            const result = await response.json();
+            document.getElementById("resultText").innerText = JSON.stringify(result, null, 2);
+        });
+
+        // Handle Speech Analysis Form Submission
+        document.getElementById("speechForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const file = document.getElementById("speechInput").files[0];
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            const response = await fetch(`${apiUrl}/analyze_speech`, {
+                method: "POST",
+                body: formData,
+            });
+
+            const result = await response.json();
+            document.getElementById("resultText").innerText = JSON.stringify(result, null, 2);
+        });
+    </script>
+</body>
+</html>
